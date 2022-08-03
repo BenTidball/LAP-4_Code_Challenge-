@@ -23,5 +23,18 @@
     font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
 }
 
-
+.my_background{
+    content: "";
+    background-image: url('../img/URLdoge.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    opacity: 0.3;
+    position: absolute;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
 
