@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+
+    </head>
+    <body>
+           <main>
+          
+            {% block content %}
+                <h1>Enter a URL and watch the magic happen</h1>
+                <form>
+                    <input type='text' name='url_sortner'/>
+                    <button type="submit">Shorten!</button>
+                </form> 
+
+            {% endblock content %}
+        </main>
+    </body>
+</html>
