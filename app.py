@@ -54,25 +54,15 @@ def display_link(url):
     return render_template('link.html', url=url)
         
 @app.route('/wdoge/<url>', methods=['GET'])
-def redirect(url):
-    #redirect from shortened url
-    print('url: ', url)
-
-    if(request.method == 'GET'):
+def windoge(url):
+    if request.method == 'GET':
+        #redirect from shortened url
+        search_result = Url.query.filter_by(new_url=url).first().org_url
         # try:
-            search_id = Url.query.filter_by(new_url=url).first() # id of short url
-
-            search_result = select([Url.columns.org_url])
-            search_result = search_result.where(id==search_id)  
-            for res in connection.execute(search_result):  
-                print(res)
-            # if search_result != None: 
-            #     redirect(search_result.org_url)
-            # else:
-            #     # handle_404('query not found')
-            #     pass
+        print('result:', search_result)
+        return redirect(f"{search_result}")
         # except:
-            return render_template('home.html')
+        #     return handle_404('url not found')
 
 # Temp delete all rows route
 @app.route('/d', methods=['GET'])
