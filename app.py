@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 from werkzeug import exceptions
 from flask_sqlalchemy import SQLAlchemy
 import string
@@ -7,8 +7,8 @@ import os
 # from dotenv import load_dotenv
 
 # load_dotenv()
-HOST_URL = os.getenv('HOST_URL')
-DB_URI = os.getenv('DB_URI')
+# HOST_URL = os.getenv('HOST_URL')
+# DB_URI = os.getenv('DB_URI')
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
@@ -27,13 +27,14 @@ class Url(db.Model):
 
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def url_generator(size=10, chars=string.printable + string.digits):
-    x = ''.join(random.choice(chars) for _ in range(size))
+    choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    x = ''.join(random.choice(choices) for _ in range(size))
+    # x = ''.join(random.choice(chars) for _ in range(size))
     return x.replace(' ', '')
 
-@app.before_request
-def start_db():
+@app.before_first_request
+def create_tables():
     db.create_all()
-    db.session.commit()
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -50,17 +51,22 @@ def home():
         db.session.add(new_url_entry)
         db.session.commit()
         # short_url = HOST_URL + new_url
-        return render_template('home.html')
     else: 
         return render_template('home.html')
+
+@app.route('/link')
+def display_link():
+    return render_template('link.html')
         
 @app.route('/<string:id>', methods=['GET'])
 def redirect(id):
 
-    # if(request.method == 'GET'):
-    #     #redirect from shortened url
-    #     search_url = id 
-    #     search_result = Url.query.filter_by(new_url=search_url).first()
+    if(request.method == 'GET'):
+        #print('id: ', id)
+        #redirect from shortened url
+        search_url = id 
+        search_result = Url.query.filter_by(new_url=search_url).first()
+        print(search_result)  #<-- Now always return None
 
     #     if search_result != None: 
     #         redirect(search_result.org_url)
@@ -69,11 +75,23 @@ def redirect(id):
     #         pass
     return render_template('home.html')
 
+# Temp delete all rows route
+@app.route('/d', methods=['GET'])
+def delete():
+    # create short links
+    if request.method == 'GET':
+        try:
+            db.session.query(Url).delete()
+            db.session.commit()
+        except:
+            print('nothing to delete')
+        
+
 @app.errorhandler(exceptions.NotFound)
 def handle_404(err):
     return render_template('errors/404.html'), 404
 
-@app.errorhandler(exceptions.MethodNotAllowed)
+@app.errorhandler(exceptions.InternalServerError)
 def handle_500(err):
     return render_template('errors/500.html'), 500
 

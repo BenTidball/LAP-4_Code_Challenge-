@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class ="container">
+    <h1>Here is your link!!!</h1>
+    {{ url }}
+
+    <a href="{{ url_for('home') }}">Check out this cool form!</a>
+</div>
+{% endblock %}
