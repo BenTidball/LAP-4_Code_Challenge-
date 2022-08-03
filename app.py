@@ -3,9 +3,15 @@ from werkzeug import exceptions
 from flask_sqlalchemy import SQLAlchemy
 import string
 import random
+import os
+# from dotenv import load_dotenv
+
+# load_dotenv()
+HOST_URL = os.getenv('HOST_URL')
+DB_URI = os.getenv('DB_URI')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -22,22 +28,9 @@ class Url(db.Model):
 def url_generator(size=10, chars=string.printable + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['POST', 'GET'])
 def home():
-    if request.method == 'GET':
-        search_url = id 
-        search_result = Url.query.filter_by(new_url=search_url).first()
-
-        if search_result != None: 
-            redirect(search_result.org_url)
-        else:
-            # handle_404('query not found')
-            pass
-    return render_template('home.html')
-
-@app.route('/<string:id>', methods=['POST'])
-def index():
-    
+    # create short links
     if request.method == 'POST':
         org_url = request.form.get('org_url') # input from form
         new_url = url_generator() # random generation
@@ -46,7 +39,25 @@ def index():
         new_url_entry = Url(org_url, new_url)
         db.session.add(new_url_entry)
         db.session.commit()
-        return new_url # return new url to user
+        short_url = HOST_URL + new_url
+        return render_template('home.html')
+    else: 
+        return render_template('home.html')
+        
+@app.route('/<string:id>', methods=['GET'])
+def redirect(id):
+
+    # if(request.method == 'GET'):
+    #     #redirect from shortened url
+    #     search_url = id 
+    #     search_result = Url.query.filter_by(new_url=search_url).first()
+
+    #     if search_result != None: 
+    #         redirect(search_result.org_url)
+    #     else:
+    #         # handle_404('query not found')
+    #         pass
+    return render_template('home.html')
 
 @app.errorhandler(exceptions.NotFound)
 def handle_404(err):
