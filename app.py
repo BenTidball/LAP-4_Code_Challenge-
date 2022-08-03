@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug import exceptions
 from flask_sqlalchemy import SQLAlchemy
 import string
@@ -59,16 +59,20 @@ def redirect(url):
     print('url: ', url)
 
     if(request.method == 'GET'):
-        search_url = id 
-        # search_result = Url.query.filter_by(new_url=search_url).first()
-        # print(search_result)  #<-- Now always return None
+        # try:
+            search_id = Url.query.filter_by(new_url=url).first() # id of short url
 
-    #     if search_result != None: 
-    #         redirect(search_result.org_url)
-    #     else:
-    #         # handle_404('query not found')
-    #         pass
-    return render_template('home.html')
+            search_result = select([Url.columns.org_url])
+            search_result = search_result.where(id==search_id)  
+            for res in connection.execute(search_result):  
+                print(res)
+            # if search_result != None: 
+            #     redirect(search_result.org_url)
+            # else:
+            #     # handle_404('query not found')
+            #     pass
+        # except:
+            return render_template('home.html')
 
 # Temp delete all rows route
 @app.route('/d', methods=['GET'])
