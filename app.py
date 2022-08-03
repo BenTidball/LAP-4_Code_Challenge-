@@ -3,16 +3,10 @@ from werkzeug import exceptions
 from flask_sqlalchemy import SQLAlchemy
 import string
 import random
-import os
-# from dotenv import load_dotenv
 
-# load_dotenv()
-# HOST_URL = os.getenv('HOST_URL')
 HOST_URL = 'http://127.0.0.1:5000'
-# DB_URI = os.getenv('DB_URI')
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -26,7 +20,6 @@ class Url(db.Model):
         self.org_url = org_url 
         self.new_url = new_url 
 
-# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def url_generator(size=10, chars=string.printable + string.digits):
     choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     x = ''.join(random.choice(choices) for _ in range(size))
@@ -62,13 +55,13 @@ def display_link(url):
         
 @app.route('/<string:id>', methods=['GET'])
 def redirect(id):
+    #redirect from shortened url
 
     if(request.method == 'GET'):
-        #print('id: ', id)
-        #redirect from shortened url
         search_url = id 
-        search_result = Url.query.filter_by(new_url=search_url).first()
-        print(search_result)  #<-- Now always return None
+        print('id: ', search_url)
+        # search_result = Url.query.filter_by(new_url=search_url).first()
+        # print(search_result)  #<-- Now always return None
 
     #     if search_result != None: 
     #         redirect(search_result.org_url)
