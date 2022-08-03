@@ -11,7 +11,8 @@ HOST_URL = os.getenv('HOST_URL')
 DB_URI = os.getenv('DB_URI')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+# app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -26,7 +27,13 @@ class Url(db.Model):
 
 # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def url_generator(size=10, chars=string.printable + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+    x = ''.join(random.choice(chars) for _ in range(size))
+    return x.replace(' ', '')
+
+@app.before_request
+def start_db():
+    db.create_all()
+    db.session.commit()
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
@@ -35,11 +42,14 @@ def home():
         org_url = request.form.get('org_url') # input from form
         new_url = url_generator() # random generation
 
+        print('org_url: ', org_url)
+        print('new_url: ', new_url)
+
         # creat new database entry
         new_url_entry = Url(org_url, new_url)
         db.session.add(new_url_entry)
         db.session.commit()
-        short_url = HOST_URL + new_url
+        # short_url = HOST_URL + new_url
         return render_template('home.html')
     else: 
         return render_template('home.html')
