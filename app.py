@@ -43,7 +43,7 @@ def home():
         new_url_entry = Url(org_url, new_url)
         db.session.add(new_url_entry)
         db.session.commit()
-        short_url = f"{HOST_URL}/{new_url}"
+        short_url = f"{HOST_URL}/wdoge/{new_url}"
 
         return display_link(short_url)
     else: 
@@ -53,13 +53,13 @@ def home():
 def display_link(url):
     return render_template('link.html', url=url)
         
-@app.route('/<string:id>', methods=['GET'])
-def redirect(id):
+@app.route('/wdoge/<url>', methods=['GET'])
+def redirect(url):
     #redirect from shortened url
+    print('url: ', url)
 
     if(request.method == 'GET'):
         search_url = id 
-        print('id: ', search_url)
         # search_result = Url.query.filter_by(new_url=search_url).first()
         # print(search_result)  #<-- Now always return None
 
