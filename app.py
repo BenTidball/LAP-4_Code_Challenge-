@@ -8,6 +8,7 @@ import os
 
 # load_dotenv()
 # HOST_URL = os.getenv('HOST_URL')
+HOST_URL = 'http://127.0.0.1:5000'
 # DB_URI = os.getenv('DB_URI')
 
 app = Flask(__name__)
@@ -29,7 +30,6 @@ class Url(db.Model):
 def url_generator(size=10, chars=string.printable + string.digits):
     choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     x = ''.join(random.choice(choices) for _ in range(size))
-    # x = ''.join(random.choice(chars) for _ in range(size))
     return x.replace(' ', '')
 
 @app.before_first_request
@@ -50,13 +50,15 @@ def home():
         new_url_entry = Url(org_url, new_url)
         db.session.add(new_url_entry)
         db.session.commit()
-        # short_url = HOST_URL + new_url
+        short_url = f"{HOST_URL}/{new_url}"
+
+        return display_link(short_url)
     else: 
         return render_template('home.html')
 
-@app.route('/link')
-def display_link():
-    return render_template('link.html')
+@app.route('/link', methods=['POST', 'GET'])
+def display_link(url):
+    return render_template('link.html', url=url)
         
 @app.route('/<string:id>', methods=['GET'])
 def redirect(id):

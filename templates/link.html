@@ -5,8 +5,9 @@
 {% block content %}
 <div class ="container">
     <h1>Here is your link!!!</h1>
-    {{ url }}
-
-    <a href="{{ url_for('home') }}">Check out this cool form!</a>
+    <a>{{ url }}</a>
+        
+    <br>
+    <a href="{{ url_for('home') }}">Create another!</a>
 </div>
 {% endblock %}
